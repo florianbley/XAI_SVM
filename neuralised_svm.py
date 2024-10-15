@@ -222,7 +222,7 @@ class neuralised_svm(SVC):
     def set_gamma(self, gamma):
         self.gamma = gamma
 
-    def integrated_gradients(self, X, n_steps=50):
+    def integrated_gradients(self, X, n_steps=10):
         """
         Compute the integrated gradients of the neuralised SVM.
         :param x: The input data for which the integrated gradients are to be computed.

@@ -5,9 +5,11 @@ import matplotlib.pyplot as plt
 import statistics
 import torch
 import torchvision
+import utils
 
 from medmnist import ChestMNIST, PneumoniaMNIST
 import sklearn
+from sklearn.datasets import make_classification
 
 def load_rice_dataset():
     # fetch dataset
@@ -423,13 +425,14 @@ def distance_normalization(X_train, X_test):
 
     return X_train_dnormed, X_test_dnormed
 
+
+
 def preprocessing(raw_dataset: dict):
     np.random.seed(0)
     X = raw_dataset["X"]
     y = raw_dataset["y"]
 
-    class_counts = np.unique(y, return_counts=True)[1]
-    class_ratio = np.max(class_counts) / class_counts.sum()
+    class_ratio = utils.class_ratio(y)
     data_dict = {"n_data_points": X.shape[0], "class_ratio": class_ratio, "n_features": X.shape[1]}
 
     # check if y is 1D
@@ -448,11 +451,7 @@ def preprocessing(raw_dataset: dict):
     # make sure median of data distance is one
     X_train, X_test = distance_normalization(X_train, X_test)
 
-    class_weight_dicts = {
-        1: (y_train == -1).sum() / len(y_train),
-        -1: (y_train == 1).sum() / len(y_train)
-}
-    data_dict["class_weight_dicts"] = class_weight_dicts
+    data_dict["class_weight_dicts"] = utils.class_weight_dict(y_train)
 
     dataset = {
         "X_train": X_train,
@@ -464,7 +463,7 @@ def preprocessing(raw_dataset: dict):
     return dataset, data_dict
 
 
-def provide_dataset(dataset_name: str, flipping_set_size: int = 100):
+def provide_dataset(dataset_name: str, flipping_set_size: int = 100, validation_set=False, opt_arguments=None):
     X, y = None, None
     if dataset_name == "concrete":
         X, y = load_concrete_dataset()
@@ -484,6 +483,8 @@ def provide_dataset(dataset_name: str, flipping_set_size: int = 100):
         X, y = load_wine_quality_dataset()
     elif dataset_name == "catalyst":
         X, y = load_catalyst_dataset()
+    elif dataset_name == "sklearn_make_classification":
+        X, y = make_classification(**opt_arguments)
     else:
         raise NotImplementedError("Dataset not implemented")
 
@@ -500,5 +501,15 @@ def provide_dataset(dataset_name: str, flipping_set_size: int = 100):
     y_flipping = y_test[:min(flipping_set_size, len(X_test))]
     processed_dataset["X_flipping"] = X_flipping
     processed_dataset["y_flipping"] = y_flipping
+
+    if validation_set is True:
+        # reserve 20% of the training set for validation
+        X_train = processed_dataset["X_train"]
+        y_train = processed_dataset["y_train"]
+        split_ind = int(0.8 * len(X_train))
+        X_train, X_val = X_train[:split_ind], X_train[split_ind:]
+        y_train, y_val = y_train[:split_ind], y_train[split_ind:]
+        processed_dataset["X_val"] = X_val
+        processed_dataset["y_val"] = y_val
 
     return processed_dataset, data_dict

@@ -26,7 +26,7 @@ import pickle
 import random
 import os
 from reduced_sets_svm import ReducedSetSVM
-from pixelflipping import train_test_split, standardise_data, flipping_procedure, compute_auc, make_kde, \
+from bin.pixelflipping import train_test_split, standardise_data, flipping_procedure, compute_auc, make_kde, \
     shuffle_data, svm_GI, svm_IG, resample_balanced_classes, manual_svm_gadient, \
     provide_opposite_class_kde_models, provide_kde_models, reverse_flipping_procedure, compute_reverse_auc
 from sklearn.linear_model import LinearRegression

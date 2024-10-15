@@ -156,7 +156,9 @@ def prepare_auc_df_SVM(model_type, pf_result_dict, dataset_auc_dict):
     # rename created column "0" to "log_gamma"
     auc_df = auc_df.rename(columns={0: "log_gamma"})
     # sort by log_gamma from smallest to largest
-    auc_df = auc_df.sort_values(by="log_gamma")
+    #auc_df = auc_df.sort_values(by="log_gamma")
+    # sort alphabetically by index
+    auc_df = auc_df.sort_index()
     # add average row
     auc_df.loc['Average'] = auc_df.mean(axis=0)
 
@@ -202,8 +204,7 @@ def prepare_auc_df_KNN(model_type, pf_result_dict, dataset_auc_dict):
     auc_df = auc_df.join(df_k)
     # rename created column "0" to "log_gamma"
     auc_df = auc_df.rename(columns={0: "k"})
-    # sort by log_gamma from smallest to largest
-    auc_df = auc_df.sort_values(by="k")
+    auc_df = auc_df.sort_index()
     # add average row
     auc_df.loc['Average'] = auc_df.mean(axis=0)
 
@@ -270,7 +271,7 @@ def main(local_adjustment_gamma : float = 0, model_type : str = "SVM", naive_exp
 
 if __name__ == "__main__":
 
-    local_adjustment_gamma = 10
+    local_adjustment_gamma = 0
     model_type = "KNN"
 
     naive_explanations = ["GI", "IG", "sensitivities", "R\\_occ"]

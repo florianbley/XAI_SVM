@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.svm import SVC, LinearSVC
+from sklearn.svm import SVC
 
 import torch
 from copy import deepcopy
@@ -12,14 +12,12 @@ import sklearn
 from sklearn.model_selection import GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier as KNN
 
-from typing import Literal, List
+from typing import List
 
-import pandas as pd
 import pickle
 import random
 import os
-import svm_explanations
-
+from bin import svm_explanations
 
 from datasets import provide_dataset
 
@@ -307,8 +305,9 @@ def main(dataset_names: List[str], model_type: str, adjustment_gamma: float = 0.
     print("Done")
 
 if __name__ == "__main__":
-    dataset_names = [#"wine_quality", "concrete", "breast_cancer", "rice", "raisin",
-                     "diabetes", "car_evaluation", "real_estate", "catalyst"]
-    model_type = "KNN"
-    local_adjustment_gamma = 10
+    dataset_names = [#"wine_quality", "concrete", "breast_cancer",
+        #"rice", "raisin",
+        "diabetes", "car_evaluation", "real_estate", "catalyst"]
+    model_type = "SVM"
+    local_adjustment_gamma = 1
     main(dataset_names, model_type, local_adjustment_gamma)
